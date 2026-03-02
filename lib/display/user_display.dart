@@ -1,5 +1,5 @@
-// Se importa el archivo 'classes.dart', que contiene la clase [User].
-import 'package:fake_store_api/classes/classes.dart';
+// Se importa el archivo 'models.dart', que contiene la clase [User].
+import 'package:fake_store_api/models/models.dart';
 
 /// Función que imprime los detalles completos de cada usuario.
 ///

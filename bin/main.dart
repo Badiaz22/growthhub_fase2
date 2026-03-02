@@ -1,9 +1,9 @@
-import 'package:fake_store_api/print_functions/print_functions.dart';
-import 'package:fake_store_api/fake_store_api.dart' as fake_store_api;
+import 'package:fake_store_api/display/display.dart';
+import 'package:fake_store_api/fake_store_api.dart';
 
 void main() async {
   // Llamada a la función fetchProducts() y manejo del resultado
-  final result = await fake_store_api.fetchProducts();
+  final result = await fetchProducts();
 
   result.fold(
     (errorMessage) {
@@ -18,7 +18,7 @@ void main() async {
   );
 
   // Llamada para obtener categorías
-  final categoriesResult = await fake_store_api.fetchCategories();
+  final categoriesResult = await fetchCategories();
   categoriesResult.fold(
     (errorMessage) {
       print('Error: $errorMessage');
@@ -29,7 +29,7 @@ void main() async {
   );
 
   // Llamada a la función para obtener todos los usuarios
-  final usersResult = await fake_store_api.fetchAllUsers();
+  final usersResult = await fetchAllUsers();
   usersResult.fold(
     (errorMessage) {
       // En caso de error

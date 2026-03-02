@@ -1,311 +1,245 @@
-# 📦 Fake Store API - Etapa 2 Reto Growth Hub
+# Fake Store API - Etapa 2 Reto Growth Hub
 
-Una aplicación de consola robusta desarrollada en **Dart** que consume la [Fake Store API](https://fakestoreapi.com/) de manera eficiente, implementando patrones modernos como `Either` para el manejo de errores y modelos de datos inmutables.
+Una aplicación de consola desarrollada en **Dart** que consume la [Fake Store API](https://fakestoreapi.com/), implementando modelos de datos inmutables y el tipo `Either` de la biblioteca `dartz` para el manejo funcional de errores.
 
 ---
 
-## 🎯 Descripción General
+## Descripción General
 
 Este proyecto demuestra habilidades fundamentales en Dart incluyendo:
-- ✅ **Consumo de APIs externas** mediante solicitudes HTTP
-- ✅ **Modelado de datos robusto** con inmutabilidad garantizada
-- ✅ **Manejo de errores funcional** usando la biblioteca `dartz`
-- ✅ **Presentación de datos** en múltiples formatos (detallado y tabla)
+- Consumo de APIs externas mediante solicitudes HTTP
+- Modelado de datos con inmutabilidad garantizada mediante constructores `const`
+- Manejo de errores funcional usando `Either` de la biblioteca `dartz`
+- Presentación de datos en múltiples formatos (detallado y tabla)
 
-La aplicación interactúa con **3 endpoints diferentes** de la Fake Store API:
-- `GET /products` - Lista de productos
-- `GET /products/categories` - Categorías disponibles
-- `GET /users` - Información de usuarios
+La aplicación interactúa con **3 endpoints** de la Fake Store API:
 
----
-
-## 🎨 Características Principales
-
-### 1. **Consumo de Múltiples Endpoints**
-   - Obtiene productos con detalles completos (título, descripción, precio, categoría, imagen)
-   - Recupera categorías de productos disponibles
-   - Accede a información completa de usuarios (nombre, dirección, contacto)
-
-### 2. **Modelos de Datos con Inmutabilidad**
-   - Todas las propiedades son `final` (garantiza inmutabilidad)
-   - Constructores `const` para optimización
-   - Métodos `fromJson()` para deserialización
-   - Métodos `toMap()` para serialización
-
-### 3. **Manejo de Errores Robusto**
-   - Implementación de `Either<String, T>` para control funcional de errores
-   - Patrón `fold()` para manejar casos exitosos y fallidos
-   - Try-catch adicional para excepciones inesperadas
-   - Mensajes de error descriptivos
-
-### 4. **Presentación Flexible de Datos**
-   - Vistas detalladas con información completa
-   - Tablas formateadas para análisis rápido
-   - Separadores visuales clara
-   - Moneda formateada (\$) para precios
+| Endpoint | Descripción |
+|---|---|
+| `GET /products` | Lista completa de productos |
+| `GET /products/categories` | Categorías disponibles |
+| `GET /users` | Información de todos los usuarios |
 
 ---
 
-## 🏗️ Arquitectura y Decisiones de Diseño
-
-### Separación de Responsabilidades
-
-```
-lib/
-├── fake_store_api.dart       ← Lógica de conectividad API
-├── classes/                  ← Modelos de datos
-│   ├── product.dart
-│   ├── category.dart
-│   ├── user.dart
-│   ├── address.dart
-│   ├── name.dart
-│   └── geolocation.dart
-└── print_functions/          ← Presentación de datos
-    ├── print_products.dart
-    ├── print_categories.dart
-    └── print_users.dart
-```
-
-### Patrón Either para Errores
-
-En lugar de lanzar excepciones, usamos `Either<Error, Success>`:
-
-```dart
-// ❌ Enfoque tradicional (menos seguro)
-List<Product> products = await fetchProducts(); // ¿Qué pasa si falla?
-
-// ✅ Enfoque funcional con Either (más seguro)
-Either<String, List<Product>> result = await fetchProducts();
-result.fold(
-  (error) => print('Error: $error'),        // Lado izquierdo: error
-  (products) => print('Éxito: $products'),  // Lado derecho: datos
-);
-```
-
-### Inmutabilidad en Modelos
-
-```dart
-class Product {
-  final int id;              // ← final = no puede cambiar
-  final String title;
-  final double price;
-  
-  const Product({...});      // ← const = optimizado
-}
-```
-
----
-
-## 📊 Modelos de Datos
-
-### **Product**
-```dart
-Product {
-  final int id
-  final String title
-  final String description
-  final double price
-  final String category
-  final String image
-}
-```
-
-### **Category**
-```dart
-Category {
-  final int id
-  final String name
-}
-```
-
-### **User**
-```dart
-User {
-  final int id
-  final String email
-  final String username
-  final String password
-  final Name name              // objeto anidado
-  final Address address         // objeto anidado
-  final String phone
-}
-```
-
-### **Modelos Anidados**
-- **Name**: `firstname`, `lastname`
-- **Address**: `street`, `city`, `zipcode`, `geolocation`
-- **Geolocation**: `lat`, `long`
-
----
-
-## 📦 Dependencias
-
-| Paquete | Versión | Propósito |
-|---------|---------|-----------|
-| **http** | ^1.2.2 | Solicitudes HTTP |
-| **dartz** | ^0.10.1 | Tipo `Either` para control de errores |
-| **test** | ^1.24.0 | Framework de pruebas (dev) |
-| **lints** | ^4.0.0 | Análisis de código (dev) |
-
----
-
-## 🚀 Instalación y Uso
-
-### Requisitos Previos
-- **Dart SDK**: 3.11.0 o superior
-- **Git** (opcional, para clonar)
-
-### Pasos de Instalación
-
-1. **Clonar o descargar el proyecto**
-   ```bash
-   git clone https://github.com/Badiaz22/growthhub_fase2.git
-   cd fake_store_api
-   ```
-
-2. **Obtener dependencias**
-   ```bash
-   dart pub get
-   ```
-
-3. **Ejecutar la aplicación**
-   ```bash
-   dart run bin/main.dart
-   ```
-   
-   O desde la carpeta `bin/`:
-   ```bash
-   cd bin
-   dart run main.dart
-   ```
-
-### Salida Esperada
-
-La aplicación generará:
-- Información extendida de todos los productos
-- Tabla resumen de productos
-- Lista de categorías disponibles
-- Información detallada de todos los usuarios
-- Tabla resumen de usuarios
-
----
-
-## 💻 Ejemplos de Uso
-
-### Obtener Productos
-```dart
-import 'package:fake_store_api/fake_store_api.dart' as api;
-
-final result = await api.fetchProducts();
-result.fold(
-  (error) => print('Error: $error'),
-  (products) {
-    for (var product in products) {
-      print('${product.title}: \$${product.price}');
-    }
-  },
-);
-```
-
-### Obtener Categorías
-```dart
-final categoriesResult = await api.fetchCategories();
-categoriesResult.fold(
-  (error) => print('Error: $error'),
-  (categories) => categories.forEach((cat) => print(cat.name)),
-);
-```
-
-### Obtener Usuarios
-```dart
-final usersResult = await api.fetchAllUsers();
-usersResult.fold(
-  (error) => print('Error: $error'),
-  (users) {
-    for (var user in users) {
-      print('${user.name.firstname} ${user.name.lastname}');
-    }
-  },
-);
-```
-
----
-
-## 🔧 Estructura de Archivos
+## Estructura del Proyecto
 
 ```
 fake_store_api/
-├── lib/
-│   ├── fake_store_api.dart              (Funciones principales de API)
-│   ├── classes/
-│   │   ├── classes.dart                 (Exportaciones centralizadas)
-│   │   ├── address.dart                 (Modelos Address, Geolocation)
-│   │   ├── category.dart                (Modelo Category)
-│   │   ├── name.dart                    (Modelo Name)
-│   │   ├── product.dart                 (Modelo Product)
-│   │   └── user.dart                    (Modelo User)
-│   └── print_functions/
-│       ├── print_functions.dart         (Exportaciones)
-│       ├── print_categories.dart        (Funciones de impresión)
-│       ├── print_products.dart          (2 vistas: detallada + tabla)
-│       └── print_users.dart             (2 vistas: detallada + tabla)
 ├── bin/
-│   └── main.dart                        (Punto de entrada)
+│   └── main.dart                        Punto de entrada
+├── lib/
+│   ├── fake_store_api.dart              Funciones de consumo de la API
+│   ├── models/
+│   │   ├── models.dart                  Barrel de exportaciones
+│   │   ├── product.dart                 Modelo Product + Rating
+│   │   ├── rating.dart                  Modelo Rating
+│   │   ├── category.dart                Modelo Category
+│   │   ├── user.dart                    Modelo User
+│   │   ├── name.dart                    Modelo Name
+│   │   ├── address.dart                 Modelo Address
+│   │   └── geolocation.dart             Modelo Geolocation
+│   └── display/
+│       ├── display.dart                 Barrel de exportaciones
+│       ├── product_display.dart         Vistas de productos
+│       ├── category_display.dart        Vista de categorías
+│       └── user_display.dart            Vistas de usuarios
 ├── test/
-│   └── fake_store_api_test.dart         (Pruebas unitarias)
-├── pubspec.yaml                         (Configuración del proyecto)
-├── analysis_options.yaml                (Configuración de análisis)
-└── README.md                            (Este archivo)
+│   └── fake_store_api_test.dart
+├── pubspec.yaml
+└── analysis_options.yaml
+```
+
+### Decisiones de diseño
+
+La estructura sigue las convenciones de Dart:
+
+- **`models/`** — DTOs que representan la respuesta de la API. 
+- **`display/`** — Funciones de presentación en consola. 
+- **`fake_store_api.dart`** — Archivo principal de la librería. Coincide con el nombre del paquete y actúa como punto de entrada al servicio HTTP.
+- **Barrel files** (`models.dart`, `display.dart`) — Centralizan las exportaciones para evitar importaciones múltiples en los archivos consumidores.
+
+---
+
+## Modelos de Datos
+
+Todos los modelos son **completamente inmutables**: propiedades `final` y constructores `const`.
+
+### Product
+
+```dart
+class Product {
+  final int id;
+  final String title;
+  final String description;
+  final double price;
+  final String category;
+  final String image;
+  final Rating rating;       // modelo anidado
+}
+```
+
+### Rating
+
+```dart
+class Rating {
+  final double rate;   // puntuación promedio (ej. 4.5)
+  final int count;     // número de valoraciones
+}
+```
+
+### Category
+
+```dart
+class Category {
+  final String name;
+}
+```
+
+> La API retorna las categorías como strings simples (`["electronics", "jewelery", ...]`).
+> Se envuelven en un modelo `Category` para mantener consistencia y extensibilidad.
+
+### User
+
+```dart
+class User {
+  final int id;
+  final String email;
+  final String username;
+  final String password;
+  final Name name;          // modelo anidado
+  final Address address;    // modelo anidado
+  final String phone;
+}
+```
+
+### Modelos anidados
+
+```dart
+class Name {
+  final String firstname;
+  final String lastname;
+}
+
+class Address {
+  final String city;
+  final String street;
+  final int number;
+  final String zipcode;
+  final Geolocation geolocation;  // modelo anidado
+}
+
+class Geolocation {
+  final String lat;
+  final String long;
+}
 ```
 
 ---
 
-## 🎓 Conceptos Implementados
+## Serialización y Deserialización
 
-### 1. **Either: Manejo Funcional de Errores**
-
-El tipo `Either` representa una bifurcación en el comportamiento:
-```dart
-Either<Left, Right>
-       ↓      ↓
-    Error   Datos
-```
-
-**Ventajas:**
-- ✅ Manejo explícito de errores
-- ✅ Código más legible
-- ✅ Previene null reference exception
-
-### 2. **Inmutabilidad**
-
-Usar `final` en todas las propiedades previene:
-- Mutaciones accidentales
-- Bugs impredecibles
-- Mejora en optimizaciones del compilador
-
-### 3. **Serialización JSON**
+Para evitar duplicación de código, `fromJson` delega a `fromMap` y `toJson` delega a `toMap`, ya que la estructura del mapa es idéntica en ambos casos:
 
 ```dart
-// Convertir JSON a Dart
-Product.fromJson(jsonMap) → Product
 
-// Convertir Dart a mapa
-product.toMap() → Map<String, dynamic>
+factory Product.fromMap(Map<String, dynamic> map) {
+  return Product(
+    id: map['id'],
+    title: map['title'],
+    price: (map['price'] as num).toDouble(),
+    rating: Rating.fromMap(map['rating']),
+    // ...
+  );
+}
+
+// fromJson delega a fromMap
+factory Product.fromJson(Map<String, dynamic> json) => Product.fromMap(json);
+
+
+Map<String, dynamic> toMap() {
+  return {
+    'id': id,
+    'title': title,
+    'price': price,
+    'rating': rating.toMap(),
+    // ...
+  };
+}
+
+// toJson delega a toMap
+Map<String, dynamic> toJson() => toMap();
 ```
 
-### 4. **Separación de Capas**
-
-- **API Layer** (`fake_store_api.dart`): Conectividad
-- **Model Layer** (`classes/`): Estructura de datos
-- **Presentation Layer** (`print_functions/`): Salida
+> **Excepción — `Category`:** La API retorna las categorías como strings simples, por lo que
+> `fromJson` recibe un `String` y `toJson` retorna un `String`. El par `fromMap` / `toMap`
+> opera con `Map<String, dynamic>` para casos de almacenamiento local.
 
 ---
 
-## 🧪 Pruebas
+## Consumo de la API y Control de Errores con Either
 
-Para ejecutar las pruebas incluidas:
+Todas las funciones de consumo retornan `Either<String, T>`:
+
+- **`Left<String>`** — contiene el mensaje de error
+- **`Right<T>`** — contiene los datos en caso de éxito
+
+Cada función aplica `try/catch` para capturar tanto errores HTTP (código de estado != 200) como errores de red o procesamiento (excepciones).
+
+```dart
+Future<Either<String, List<Product>>> fetchProducts() async {
+  try {
+    final response = await http.get(Uri.parse(getProductsUrl));
+
+    if (response.statusCode == 200) {
+      List<dynamic> data = jsonDecode(response.body);
+      List<Product> products =
+          data.map((product) => Product.fromJson(product)).toList();
+      return Right(products);
+    } else {
+      return Left(
+          'Error al obtener los productos. Código de estado: ${response.statusCode}');
+    }
+  } catch (e) {
+    return Left('Error al realizar la solicitud de productos: $e');
+  }
+}
+```
+
+El resultado se consume con `fold()`:
+
+```dart
+final result = await fetchProducts();
+
+result.fold(
+  (error) => print('Error: $error'),      // Left: error capturado
+  (products) => printProducts(products),  // Right: datos válidos
+);
+```
+
+## Dependencias
+
+| Paquete | Versión | Propósito |
+|---|---|---|
+| `http` | ^1.2.2 | Solicitudes HTTP |
+| `dartz` | ^0.10.1 | Tipo `Either` para control de errores |
+| `lints` | ^4.0.0 | Análisis estático (dev) |
+| `test` | ^1.24.0 | Framework de pruebas (dev) |
+
+---
+
+## Instalación y Uso
+
+**Requisitos:** Dart SDK 3.11.0 o superior.
 
 ```bash
-dart test
+# 1. Clonar el repositorio
+git clone https://github.com/Badiaz22/growthhub_fase2.git
+cd fake_store_api
+
+# 2. Instalar dependencias
+dart pub get
+
+# 3. Ejecutar
+dart run bin/main.dart
 ```
----

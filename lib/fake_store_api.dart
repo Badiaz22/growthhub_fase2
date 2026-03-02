@@ -8,44 +8,52 @@ import 'package:dartz/dartz.dart';
 import 'package:http/http.dart' as http;
 // Importa el paquete 'http', que proporciona utilidades para realizar solicitudes HTTP.
 
-import 'package:fake_store_api/classes/classes.dart';
-// Importa el archivo 'classes.dart', que contiene las clases [Product], [Category] y [User] necesarias para mapear la respuesta de la API.
+import 'package:fake_store_api/models/models.dart';
+// Importa el archivo 'models.dart', que contiene las clases [Product], [Category] y [User] necesarias para mapear la respuesta de la API.
 
-// Variables que almacenan las URLs base de la API para productos, categorías y usuarios.
+// Constantes que almacenan las URLs base de la API para productos, categorías y usuarios.
+// Se usa 'const' en lugar de 'final' porque son valores conocidos en tiempo de compilación,
+// lo que permite al compilador optimizarlos y evitar su recálculo en tiempo de ejecución.
 /// URL base de la API Fake Store.
-final String baseUrl = 'https://fakestoreapi.com';
+const String baseUrl = 'https://fakestoreapi.com';
 
 /// URL para obtener la lista de productos.
-final String getProductsUrl = '$baseUrl/products';
+const String getProductsUrl = '$baseUrl/products';
 
 /// URL para obtener las categorías de productos.
-final String getProductsCategoriesUrl = '$getProductsUrl/categories';
+const String getProductsCategoriesUrl = '$getProductsUrl/categories';
 
 /// URL para obtener la lista de todos los usuarios.
-final String getAllUserUrl = '$baseUrl/users';
+const String getAllUserUrl = '$baseUrl/users';
 
 /// Función que realiza una solicitud HTTP para obtener la lista de productos.
 ///
 /// La función devuelve un objeto de tipo [Either], que puede contener un mensaje de error (Left)
 /// o una lista de productos (Right) en caso de éxito.
 Future<Either<String, List<Product>>> fetchProducts() async {
-  // Realiza una solicitud GET a la API usando la URL de productos y espera la respuesta.
-  final response = await http.get(Uri.parse(getProductsUrl));
+  try {
+    // Realiza una solicitud GET a la API usando la URL de productos y espera la respuesta.
+    final response = await http.get(Uri.parse(getProductsUrl));
 
-  // Si la respuesta tiene el código de estado 200 (éxito), se procede a decodificar los datos.
-  if (response.statusCode == 200) {
-    // Convierte el cuerpo de la respuesta HTTP, que está en formato JSON, en una lista dinámica.
-    List<dynamic> data = jsonDecode(response.body);
+    // Si la respuesta tiene el código de estado 200 (éxito), se procede a decodificar los datos.
+    if (response.statusCode == 200) {
+      // Convierte el cuerpo de la respuesta HTTP, que está en formato JSON, en una lista dinámica.
+      List<dynamic> data = jsonDecode(response.body);
 
-    // Itera sobre cada elemento de la lista dinámica, convirtiendo cada uno en un objeto [Product] mediante el método 'fromJson'.
-    List<Product> products =
-        data.map((product) => Product.fromJson(product)).toList();
+      // Itera sobre cada elemento de la lista dinámica, convirtiendo cada uno en un objeto [Product] mediante el método 'fromJson'.
+      List<Product> products =
+          data.map((product) => Product.fromJson(product)).toList();
 
-    // Devuelve la lista de productos como resultado exitoso utilizando 'Right'.
-    return Right(products);
-  } else {
-    // Si el código de estado no es 200, se devuelve un mensaje de error utilizando 'Left'.
-    return Left('Error al obtener los productos');
+      // Devuelve la lista de productos como resultado exitoso utilizando 'Right'.
+      return Right(products);
+    } else {
+      // Si el código de estado no es 200, se devuelve un mensaje de error con el código de estado.
+      return Left(
+          'Error al obtener los productos. Código de estado: ${response.statusCode}');
+    }
+  } catch (e) {
+    // Si ocurre un error de red o de procesamiento, lo captura y lo devuelve usando 'Left'.
+    return Left('Error al realizar la solicitud de productos: $e');
   }
 }
 
@@ -54,23 +62,29 @@ Future<Either<String, List<Product>>> fetchProducts() async {
 /// La función devuelve un objeto [Either] que contiene un mensaje de error (Left)
 /// o una lista de categorías (Right) en caso de éxito.
 Future<Either<String, List<Category>>> fetchCategories() async {
-  // Realiza una solicitud GET a la URL de categorías y espera la respuesta.
-  final response = await http.get(Uri.parse(getProductsCategoriesUrl));
+  try {
+    // Realiza una solicitud GET a la URL de categorías y espera la respuesta.
+    final response = await http.get(Uri.parse(getProductsCategoriesUrl));
 
-  // Si el código de estado es 200 (éxito), procesa la respuesta.
-  if (response.statusCode == 200) {
-    // Convierte el cuerpo de la respuesta en una lista dinámica de categorías.
-    List<dynamic> data = jsonDecode(response.body);
+    // Si el código de estado es 200 (éxito), procesa la respuesta.
+    if (response.statusCode == 200) {
+      // Convierte el cuerpo de la respuesta en una lista dinámica de categorías.
+      List<dynamic> data = jsonDecode(response.body);
 
-    // Mapea cada categoría en el formato JSON a un objeto [Category] mediante 'fromJson'.
-    List<Category> categories =
-        data.map((category) => Category.fromJson(category)).toList();
+      // Mapea cada categoría en el formato JSON a un objeto [Category] mediante 'fromJson'.
+      List<Category> categories =
+          data.map((category) => Category.fromJson(category)).toList();
 
-    // Retorna la lista de categorías en caso de éxito utilizando 'Right'.
-    return Right(categories);
-  } else {
-    // En caso de error, devuelve un mensaje de error utilizando 'Left'.
-    return Left('Error al obtener las categorías');
+      // Retorna la lista de categorías en caso de éxito utilizando 'Right'.
+      return Right(categories);
+    } else {
+      // En caso de error HTTP, devuelve un mensaje de error con el código de estado.
+      return Left(
+          'Error al obtener las categorías. Código de estado: ${response.statusCode}');
+    }
+  } catch (e) {
+    // Si ocurre un error de red o de procesamiento, lo captura y lo devuelve usando 'Left'.
+    return Left('Error al realizar la solicitud de categorías: $e');
   }
 }
 
@@ -79,12 +93,9 @@ Future<Either<String, List<Category>>> fetchCategories() async {
 /// La función devuelve un objeto [Either] que contiene un mensaje de error (Left)
 /// o una lista de usuarios (Right) en caso de éxito.
 Future<Either<String, List<User>>> fetchAllUsers() async {
-  // Define la URL para obtener la lista de usuarios.
-  final url = Uri.parse(getAllUserUrl);
-
   try {
     // Realiza una solicitud GET a la URL y espera la respuesta.
-    final response = await http.get(url);
+    final response = await http.get(Uri.parse(getAllUserUrl));
 
     // Si la respuesta tiene un código de estado 200 (éxito), procesa los datos.
     if (response.statusCode == 200) {
@@ -104,6 +115,6 @@ Future<Either<String, List<User>>> fetchAllUsers() async {
     }
   } catch (e) {
     // Si ocurre un error en la solicitud, lo captura y devuelve el error utilizando 'Left'.
-    return Left('Error al realizar la solicitud: $e');
+    return Left('Error al realizar la solicitud de usuarios: $e');
   }
 }

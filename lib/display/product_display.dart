@@ -1,5 +1,5 @@
-// Se importa el archivo 'classes.dart', que contiene la clase [Product].
-import 'package:fake_store_api/classes/classes.dart';
+// Se importa el archivo 'models.dart', que contiene la clase [Product].
+import 'package:fake_store_api/models/models.dart';
 
 /// Función que imprime los detalles completos de cada producto.
 ///
@@ -35,6 +35,9 @@ void printProducts({required List<Product> products}) {
 
     /// Imprime la URL de la imagen asociada al producto.
     print('Image: ${product.image}');
+
+    /// Imprime la calificación promedio y el número de valoraciones del producto.
+    print('Rating: ${product.rating.rate} / 5 (${product.rating.count} reviews)');
 
     /// Imprime una línea separadora entre cada producto.
     print('-----------------------------');

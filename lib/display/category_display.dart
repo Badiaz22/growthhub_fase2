@@ -1,5 +1,5 @@
-// Se importa el archivo 'classes.dart', donde está definida la clase [Category].
-import 'package:fake_store_api/classes/classes.dart';
+// Se importa el archivo 'models.dart', donde está definida la clase [Category].
+import 'package:fake_store_api/models/models.dart';
 
 /// Función que imprime la lista de categorías de productos.
 ///
